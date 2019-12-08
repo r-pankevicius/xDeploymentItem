@@ -157,5 +157,17 @@ namespace BusinessLogicTestsNew
 					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
 			}
 		}
+
+		/* EXAMPLE
+[Fact]
+public void MyMethodWorksOnMyFile()
+{
+	using (var deployer = new XDeploymentHelper(this))
+	{
+		string fullPathToMyFile = deployer.DeployEmbeddedResource("MyFile.txt");
+		Assert.True(MyClass.MyMethod(fullPathToMyFile));
+	}
+}
+*/
 	}
 }
