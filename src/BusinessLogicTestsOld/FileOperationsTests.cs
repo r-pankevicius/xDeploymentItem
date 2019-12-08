@@ -9,15 +9,34 @@ namespace BusinessLogicTestsOld
 	{
 		public TestContext TestContext { get; set; }
 
+		/// <summary>
+		/// Checks if we don't use same folder for multiple deployments.
+		/// <para>
+		/// We have to ignore it in VisualStudio UnitTesting because running
+		/// all tests at once deploys files and folders to the same place
+		/// for all tests.
+		/// </para>
+		/// </summary>
 		[TestMethod]
-		public void NonExistingFileDoesntExist()
+		[Ignore]
+		public void NotDeployedFileDoesntExist()
 		{
 			TestContext.WriteLine($"Deployment directory is {TestContext.DeploymentDirectory}");
 
-			const string filename = "😺";
-			string pathToFile = Path.Combine(TestContext.DeploymentDirectory, filename);
-			bool exists = FileOperations.FileExists(pathToFile);
-			Assert.IsFalse(exists, $"File '{filename} should not exist.");
+			string[] pathsToCheck = {
+				"1-line.txt",
+				"2-lines.txt",
+				"thedirectory"
+			};
+
+			foreach (string fileOrFolder in pathsToCheck)
+			{
+				string fullPath = Path.Combine(TestContext.DeploymentDirectory, fileOrFolder);
+				bool exists = File.Exists(fullPath);
+				Assert.IsFalse(exists, $"File '{fullPath} should not exist.");
+				exists = Directory.Exists(fullPath);
+				Assert.IsFalse(exists, $"Directory '{fullPath} should not exist.");
+			}
 		}
 
 		[TestMethod]
