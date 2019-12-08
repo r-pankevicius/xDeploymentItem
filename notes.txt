@@ -3,5 +3,7 @@
 == System.IO.File >= 1.3
 https://docs.microsoft.com/en-us/dotnet/api/system.io.file?view=netframework-4.8
 
-
-
+== Type.Assembly Property
+If the Type.Assembly property is not available on a particular .NET implementation,
+such as .NET Core or the Universal Windows Platform, use the TypeInfo.Assembly property instead.
+https://docs.microsoft.com/en-us/dotnet/api/system.type.assembly?view=netframework-4.8#System_Type_Assembly

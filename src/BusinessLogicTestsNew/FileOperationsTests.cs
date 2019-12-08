@@ -46,12 +46,11 @@ namespace BusinessLogicTestsNew
 				}
 			}
 
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-				Assert.False(Directory.Exists(deployer.DeploymentDirectory),
-					"DeploymentDirectory should not exist before first deployment");
-				RunChecks(deployer);
+				// DeploymentDirectory should not exist before first deployment
+				Assert.Null(deployer.DeploymentDirectory);
 
 				string pathReturned = deployer.CreateDeploymentDirectory();
 				Assert.Equal(pathReturned, deployer.DeploymentDirectory);
@@ -62,7 +61,7 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void FileDeployedFromRoot()
 		{
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				string pathToFile = deployer.DeployEmbeddedResource("1-line.txt"); // -> Out\1 - line.txt
 
@@ -78,7 +77,7 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void FileDeployedFromRootToSpecifiedDirectory()
 		{
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				string pathToFile = deployer.DeployEmbeddedResource(
 					"1-line.txt", "thedirectory"); // -> Out\thedirectory\1-line.txt
@@ -95,7 +94,7 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void FileDeployedFromRootToSpecifiedNestedDirectory()
 		{
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				string pathToFile = deployer.DeployEmbeddedResource(
 					"1-line.txt", @"thedirectory\nesteddirectory"); // -> Out\thedirectory\nesteddirectory\1-line.txt
@@ -112,7 +111,7 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void FileDeployedFromNestedFolder()
 		{
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				string pathToFile = deployer.DeployEmbeddedResource(@"SomeFolder\2-lines.txt"); // -> Out\2-lines.txt
 
@@ -128,7 +127,7 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void FileDeployedFromNestedFolderToSpecifiedDirectory()
 		{
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				string pathToFile = deployer.DeployEmbeddedResource(
 					@"SomeFolder\2-lines.txt", "thedirectory"); // -> Out\thedirectory\2-lines.txt
@@ -145,7 +144,7 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void FileDeployedFromNestedFolderToSpecifiedNestedDirectory()
 		{
-			using (var deployer = new XDeploymentHelper())
+			using (var deployer = new XDeploymentHelper(this))
 			{
 				string pathToFile = deployer.DeployEmbeddedResource(
 					@"SomeFolder\2-lines.txt", @"thedirectory\nesteddirectory"); // -> Out\thedirectory\nesteddirectory\2-lines.txt
@@ -153,7 +152,7 @@ namespace BusinessLogicTestsNew
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
 
 				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "thedirectory", "nesteddirectory", "1-line.txt");
+					deployer.DeploymentDirectory, "thedirectory", "nesteddirectory", "2-lines.txt");
 				Assert.True(FileOperations.FileExists(fullPath),
 					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
 			}
