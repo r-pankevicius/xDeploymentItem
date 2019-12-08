@@ -1,0 +1,7 @@
+====.NET Standard
+
+== System.IO.File >= 1.3
+https://docs.microsoft.com/en-us/dotnet/api/system.io.file?view=netframework-4.8
+
+
+
