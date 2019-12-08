@@ -116,15 +116,5 @@ namespace BusinessLogicTestsOld
 			Assert.IsTrue(FileOperations.FileExists(fullPath),
 				$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
 		}
-
-		/* EXAMPLE
-		[TestMethod]
-		[DeploymentItem("MyFile.txt")]
-		public void MyMethodWorksOnMyFile()
-		{
-			string fullPathToMyFile = Path.Combine(TestContext.DeploymentDirectory, "MyFile.txt");
-			Assert.IsTrue(MyClass.MyMethod(fullPathToMyFile));
-		}
-		*/
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using BusinessLogic;
-using System;
 using System.IO;
 using xDeploy;
 using Xunit;
@@ -63,14 +62,9 @@ namespace BusinessLogicTestsNew
 		{
 			using (var deployer = new XDeploymentHelper(this))
 			{
-				string pathToFile = deployer.DeployEmbeddedResource("1-line.txt"); // -> Out\1 - line.txt
-
+				string fullPathToFile = deployer.DeployEmbeddedResource("1-line.txt"); // -> Out\1 - line.txt
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-
-				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "1-line.txt");
-				Assert.True(FileOperations.FileExists(fullPath),
-					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
+				Assert.True(FileOperations.FileExists(fullPathToFile));
 			}
 		}
 
@@ -79,15 +73,11 @@ namespace BusinessLogicTestsNew
 		{
 			using (var deployer = new XDeploymentHelper(this))
 			{
-				string pathToFile = deployer.DeployEmbeddedResource(
+				string fullPathToFile = deployer.DeployEmbeddedResource(
 					"1-line.txt", "thedirectory"); // -> Out\thedirectory\1-line.txt
-
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-
-				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "thedirectory", "1-line.txt");
-				Assert.True(FileOperations.FileExists(fullPath),
-					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
+				Assert.True(FileOperations.FileExists(fullPathToFile),
+					$"File '{fullPathToFile} should be deployed. Did you forget to set 'Embedded resource' property?");
 			}
 		}
 
@@ -96,15 +86,11 @@ namespace BusinessLogicTestsNew
 		{
 			using (var deployer = new XDeploymentHelper(this))
 			{
-				string pathToFile = deployer.DeployEmbeddedResource(
+				string fullPathToFile = deployer.DeployEmbeddedResource(
 					"1-line.txt", @"thedirectory\nesteddirectory"); // -> Out\thedirectory\nesteddirectory\1-line.txt
-
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-
-				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "thedirectory", "nesteddirectory", "1-line.txt");
-				Assert.True(FileOperations.FileExists(fullPath),
-					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
+				Assert.True(FileOperations.FileExists(fullPathToFile),
+					$"File '{fullPathToFile} should be deployed. Did you forget to set 'Embedded resource' property?");
 			}
 		}
 
@@ -113,14 +99,10 @@ namespace BusinessLogicTestsNew
 		{
 			using (var deployer = new XDeploymentHelper(this))
 			{
-				string pathToFile = deployer.DeployEmbeddedResource(@"SomeFolder\2-lines.txt"); // -> Out\2-lines.txt
-
+				string fullPathToFile = deployer.DeployEmbeddedResource(@"SomeFolder\2-lines.txt"); // -> Out\2-lines.txt
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-
-				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "2-lines.txt");
-				Assert.True(FileOperations.FileExists(fullPath),
-					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
+				Assert.True(FileOperations.FileExists(fullPathToFile),
+					$"File '{fullPathToFile} should be deployed. Did you forget to set 'Embedded resource' property?");
 			}
 		}
 
@@ -129,15 +111,11 @@ namespace BusinessLogicTestsNew
 		{
 			using (var deployer = new XDeploymentHelper(this))
 			{
-				string pathToFile = deployer.DeployEmbeddedResource(
+				string pfullPathToFileathToFile = deployer.DeployEmbeddedResource(
 					@"SomeFolder\2-lines.txt", "thedirectory"); // -> Out\thedirectory\2-lines.txt
-
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-
-				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "thedirectory", "2-lines.txt");
-				Assert.True(FileOperations.FileExists(fullPath),
-					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
+				Assert.True(FileOperations.FileExists(pfullPathToFileathToFile),
+					$"File '{pfullPathToFileathToFile} should be deployed. Did you forget to set 'Embedded resource' property?");
 			}
 		}
 
@@ -146,28 +124,12 @@ namespace BusinessLogicTestsNew
 		{
 			using (var deployer = new XDeploymentHelper(this))
 			{
-				string pathToFile = deployer.DeployEmbeddedResource(
+				string fullPathToFile = deployer.DeployEmbeddedResource(
 					@"SomeFolder\2-lines.txt", @"thedirectory\nesteddirectory"); // -> Out\thedirectory\nesteddirectory\2-lines.txt
-
 				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-
-				string fullPath = Path.Combine(
-					deployer.DeploymentDirectory, "thedirectory", "nesteddirectory", "2-lines.txt");
-				Assert.True(FileOperations.FileExists(fullPath),
-					$"File '{fullPath} should be deployed. Did you forget to set 'Copy if newer' property?");
+				Assert.True(FileOperations.FileExists(fullPathToFile),
+					$"File '{fullPathToFile} should be deployed. Did you forget to set 'Embedded resource' property?");
 			}
 		}
-
-		/* EXAMPLE
-[Fact]
-public void MyMethodWorksOnMyFile()
-{
-	using (var deployer = new XDeploymentHelper(this))
-	{
-		string fullPathToMyFile = deployer.DeployEmbeddedResource("MyFile.txt");
-		Assert.True(MyClass.MyMethod(fullPathToMyFile));
-	}
-}
-*/
 	}
 }

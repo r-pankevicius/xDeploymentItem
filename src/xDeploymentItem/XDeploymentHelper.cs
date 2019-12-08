@@ -47,8 +47,14 @@ namespace xDeploy
 		public string DeploymentDirectory { get; private set; }
 
 		/// <summary>
-		/// Deletes <see cref="DeploymentDirectory"/>.
+		/// Deletes all files you deployed. <see cref="DeploymentDirectory"/>.
 		/// </summary>
+		/// <remarks>
+		/// If you are hunting after random failure on build machine,
+		/// TEMPORARY (anyway it will last ages) don't dispose.
+		/// Deployed files will not be deleted.
+		/// You will be able to see what was left after your tests.
+		/// </remarks>
 		public void Dispose()
 		{
 			if (DeploymentDirectory != null)
@@ -71,6 +77,11 @@ namespace xDeploy
 			return DeploymentDirectory;
 		}
 
+		/// <summary>
+		/// Loads embedded resource and saves it as afile to a temporary folder.
+		/// </summary>
+		/// <param name="resourcePath">TODO</param>
+		/// <returns>The full path to the file deployed.</returns>
 		public string DeployEmbeddedResource(string resourcePath)
 		{
 			ParsedPath parsedResourcePath = ParseResourcePath(resourcePath);
@@ -88,6 +99,12 @@ namespace xDeploy
 			}
 		}
 
+		/// <summary>
+		/// Loads embedded resource and saves it as afile to a temporary folder.
+		/// </summary>
+		/// <param name="resourcePath">TODO</param>
+		/// <param name="outputSubDirectory">TODO</param>
+		/// <returns>The full path to the file deployed.</returns>
 		public string DeployEmbeddedResource(string resourcePath, string outputSubDirectory)
 		{
 			ParsedPath parsedResourcePath = ParseResourcePath(resourcePath);
