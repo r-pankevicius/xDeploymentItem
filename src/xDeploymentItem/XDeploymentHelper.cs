@@ -202,9 +202,13 @@ namespace xDeploy
 			var invalidFileNameChars = new HashSet<char>(Path.GetInvalidFileNameChars());
 			foreach (string part in parts)
 			{
-				if (part.ToCharArray().Any(ch => invalidFileNameChars.Contains(ch)))
-					throw new ArgumentException(
-						$"Invalid file name chars found in the part '{part}'");
+				char[] partChars = part.ToCharArray();
+
+				if (partChars.All(ch => ch == '.'))
+					throw new ArgumentException($"'Points only' parts are not allowed in paths.");
+
+				if (partChars.Any(ch => invalidFileNameChars.Contains(ch)))
+					throw new ArgumentException($"Invalid file name chars found in the part '{part}'");
 			}
 
 			bool isRoot = withForwardSlashes.StartsWith("/", StringComparison.Ordinal);

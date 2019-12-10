@@ -6,11 +6,14 @@ using Xunit.Abstractions;
 
 namespace BusinessLogicTestsNew
 {
-	public class FileOperationsTests
+	/// <summary>
+	/// Side-by-side tests that match Visual Studio Unit Test version of FileOperationsTests.
+	/// </summary>
+	public class FileOperationsTests_VSUT
 	{
 		readonly ITestOutputHelper testOutputWriter;
 
-		public FileOperationsTests(ITestOutputHelper outputWriter)
+		public FileOperationsTests_VSUT(ITestOutputHelper outputWriter)
 		{
 			testOutputWriter = outputWriter;
 		}
@@ -27,8 +30,17 @@ namespace BusinessLogicTestsNew
 		[Fact]
 		public void NotDeployedFileDoesntExist()
 		{
-			void RunChecks(XDeploymentHelper deployer)
+			string deploymentDirectory;
+
+			using (var deployer = new XDeploymentHelper(this))
 			{
+				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
+				// DeploymentDirectory should not exist before first deployment
+				Assert.Null(deployer.DeploymentDirectory);
+
+				string pathReturned = deployer.CreateDeploymentDirectory();
+				Assert.Equal(pathReturned, deployer.DeploymentDirectory);
+
 				string[] pathsToCheck = {
 					"1-line.txt",
 					"2-lines.txt",
@@ -43,18 +55,11 @@ namespace BusinessLogicTestsNew
 					exists = Directory.Exists(fullPath);
 					Assert.False(exists, $"Directory '{fullPath} should not exist.");
 				}
+
+				deploymentDirectory = deployer.DeploymentDirectory;
 			}
 
-			using (var deployer = new XDeploymentHelper(this))
-			{
-				testOutputWriter.WriteLine($"Deployment directory is {deployer.DeploymentDirectory}");
-				// DeploymentDirectory should not exist before first deployment
-				Assert.Null(deployer.DeploymentDirectory);
-
-				string pathReturned = deployer.CreateDeploymentDirectory();
-				Assert.Equal(pathReturned, deployer.DeploymentDirectory);
-				RunChecks(deployer);
-			}
+			Assert.False(Directory.Exists(deploymentDirectory), "Deployment directory should be deleted in Dispose()");
 		}
 
 		[Fact]

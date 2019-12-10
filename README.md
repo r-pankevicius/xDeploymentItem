@@ -1,7 +1,7 @@
 ﻿# xDeploymentItem
 
 The initial idea was to port Visual Studio Unit Testing DeploymentItem attribute to xUnit.
-But after three days of thinking I redesigned it while initial idea was not lost.
+But after some thinking I redesigned it while initial idea was not lost.
 
 # Porting Visual Studio Unit Testing DeploymentItem
 ## 1. Change "Copy to output directory" to embedded resources
@@ -29,13 +29,18 @@ public void MyMethodWorksOnMyFile()
 	}
 }
 ```
+
+Take a look at side-by-side tests for [Visual Studio Unit Testing DeploymentItem](./src/BusinessLogicTestsOld/FileOperationsTests.cs)
+and [xDeploymentItem](./src/BusinessLogicTestsNew/FileOperationsTests_VSUT.cs)
+
+
 ## 3. That's all...
-It should work, otherwisefill the issue if it doesn't.
+It should work, otherwise fill the issue if it doesn't.
 All the XDeploymentHelper logic is [one small file](./src/xDeploymentItem/XDeploymentHelper.cs), copy it to your code base, read and debug it.
+
+Minimum .NET Standard version: 1.3.
 
 # Links
 
 You can find that Visual Studio DeploymentItem documentation
 [here](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.deploymentitemattribute?view=mstest-net-1.2.0).
-
-
