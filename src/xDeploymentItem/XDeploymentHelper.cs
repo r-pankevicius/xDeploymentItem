@@ -36,7 +36,8 @@ namespace xDeploy
 		/// </param>
 		public XDeploymentHelper(object testInstanceOrAssembly)
 		{
-			referenceObject = testInstanceOrAssembly ?? throw new ArgumentNullException(nameof(testInstanceOrAssembly));
+			referenceObject = testInstanceOrAssembly ??
+				throw new ArgumentNullException(nameof(testInstanceOrAssembly));
 		}
 
 		/// <summary>
@@ -80,11 +81,11 @@ namespace xDeploy
 		/// <summary>
 		/// Loads embedded resource and saves it as afile to a temporary folder.
 		/// </summary>
-		/// <param name="resourcePath">TODO</param>
+		/// <param name="resourcePath">Embedded resource path (with / and \ separators)</param>
 		/// <returns>The full path to the file deployed.</returns>
 		public string DeployEmbeddedResource(string resourcePath)
 		{
-			ParsedPath parsedResourcePath = ParseResourcePath(resourcePath);
+			var parsedResourcePath = ResourcePathParser.Parse(resourcePath);
 			VerifyEmbeddedResourcePath(parsedResourcePath);
 
 			using (Stream resourceStream = GetResourceStream(parsedResourcePath))
@@ -102,15 +103,17 @@ namespace xDeploy
 		/// <summary>
 		/// Loads embedded resource and saves it as afile to a temporary folder.
 		/// </summary>
-		/// <param name="resourcePath">TODO</param>
-		/// <param name="outputSubDirectory">TODO</param>
+		/// <param name="resourcePath">Embedded resource path (with / and \ separators)</param>
+		/// <param name="outputSubDirectory">
+		/// Subdirectory where to deploy resource file (with / and \ separators)
+		/// </param>
 		/// <returns>The full path to the file deployed.</returns>
 		public string DeployEmbeddedResource(string resourcePath, string outputSubDirectory)
 		{
-			ParsedPath parsedResourcePath = ParseResourcePath(resourcePath);
+			var parsedResourcePath = ResourcePathParser.Parse(resourcePath);
 			VerifyEmbeddedResourcePath(parsedResourcePath);
 
-			ParsedPath parsedOutputSubdirectory = ParseResourcePath(outputSubDirectory);
+			var parsedOutputSubdirectory = ResourcePathParser.Parse(outputSubDirectory);
 			if (parsedOutputSubdirectory.IsRoot)
 				throw new ArgumentException($"{nameof(outputSubDirectory)} should be relative, not root.");
 
@@ -128,7 +131,7 @@ namespace xDeploy
 
 		#region Implementation
 
-		void VerifyEmbeddedResourcePath(ParsedPath parsedResourcePath)
+		void VerifyEmbeddedResourcePath(ResourcePathParser.ParsedPath parsedResourcePath)
 		{
 			if (referenceObject is Assembly && !parsedResourcePath.IsRoot)
 			{
@@ -137,11 +140,11 @@ namespace xDeploy
 			}
 		}
 
-		Stream GetResourceStream(ParsedPath parsedResourcePath)
+		Stream GetResourceStream(ResourcePathParser.ParsedPath parsedResourcePath)
 		{
 			string pathToEmbeddedRes = string.Join(".", parsedResourcePath.Parts);
 
-			Assembly assembly = referenceObject as Assembly;
+			var assembly = referenceObject as Assembly;
 			if (assembly == null)
 			{
 				var type = referenceObject.GetType();
@@ -161,7 +164,7 @@ namespace xDeploy
 			return resourceStream;
 		}
 
-		string GetTargetFilePath(ParsedPath parsedResourcePath)
+		string GetTargetFilePath(ResourcePathParser.ParsedPath parsedResourcePath)
 		{
 			string fileName = parsedResourcePath.Parts.Last();
 			CreateDeploymentDirectory();
@@ -170,7 +173,8 @@ namespace xDeploy
 		}
 
 		string GetTargetFilePath(
-			ParsedPath parsedResourcePath, ParsedPath parsedOutputSubdirectory)
+			ResourcePathParser.ParsedPath parsedResourcePath,
+			ResourcePathParser.ParsedPath parsedOutputSubdirectory)
 		{
 			string subDirectory = string.Join(
 				Path.DirectorySeparatorChar.ToString(), parsedOutputSubdirectory.Parts);
@@ -183,48 +187,54 @@ namespace xDeploy
 			return result;
 		}
 
-#warning TODO: Extract paths parsing to a separate class, add tests.
-		static ParsedPath ParseResourcePath(string path)
+		#endregion
+
+		#region Inner classes
+
+		internal static class ResourcePathParser
 		{
-			if (string.IsNullOrWhiteSpace(path))
-				throw new ArgumentException(nameof(path));
-
-			string withForwardSlashes = path.Replace('\\', '/');
-			if (withForwardSlashes.Contains("//"))
-				throw new ArgumentException(
-					$"Double slashes are not allowed in path: '{path}'");
-
-			string[] parts = withForwardSlashes.Split(
-				new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-			if (parts.Length == 0)
-				throw new ArgumentException(nameof(path));
-
-			var invalidFileNameChars = new HashSet<char>(Path.GetInvalidFileNameChars());
-			foreach (string part in parts)
+			public static ParsedPath Parse(string path)
 			{
-				char[] partChars = part.ToCharArray();
+				if (string.IsNullOrWhiteSpace(path))
+					throw new ArgumentException(nameof(path));
 
-				if (partChars.All(ch => ch == '.'))
-					throw new ArgumentException($"'Points only' parts are not allowed in paths.");
+				string withForwardSlashes = path.Replace('\\', '/');
+				if (withForwardSlashes.Contains("//"))
+					throw new ArgumentException(
+						$"Double slashes are not allowed in path: '{path}'");
 
-				if (partChars.Any(ch => invalidFileNameChars.Contains(ch)))
-					throw new ArgumentException($"Invalid file name chars found in the part '{part}'");
+				string[] parts = withForwardSlashes.Split(
+					new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+				if (parts.Length == 0)
+					throw new ArgumentException(nameof(path));
+
+				var invalidFileNameChars = new HashSet<char>(Path.GetInvalidFileNameChars());
+				foreach (string part in parts)
+				{
+					char[] partChars = part.ToCharArray();
+
+					if (partChars.All(ch => ch == '.'))
+						throw new ArgumentException($"'Points only' parts are not allowed in paths.");
+
+					if (partChars.Any(ch => invalidFileNameChars.Contains(ch)))
+						throw new ArgumentException($"Invalid file name chars found in the part '{part}'");
+				}
+
+				bool isRoot = withForwardSlashes.StartsWith("/", StringComparison.Ordinal);
+
+				return new ParsedPath(isRoot, parts);
 			}
 
-			bool isRoot = withForwardSlashes.StartsWith("/", StringComparison.Ordinal);
-
-			return new ParsedPath(isRoot, parts);
-		}
-
-		struct ParsedPath
-		{
-			public bool IsRoot;
-			public string[] Parts;
-
-			public ParsedPath(bool isRoot, string[] parts)
+			internal struct ParsedPath
 			{
-				IsRoot = isRoot;
-				Parts = parts;
+				public bool IsRoot { get; private set; }
+				public string[] Parts { get; private set; }
+
+				public ParsedPath(bool isRoot, string[] parts)
+				{
+					IsRoot = isRoot;
+					Parts = parts;
+				}
 			}
 		}
 
