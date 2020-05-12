@@ -129,6 +129,18 @@ namespace xDeploy
 			}
 		}
 
+		/// <summary>
+		/// Just a convenience method to get embedded resource using "path syntax".
+		/// </summary>
+		/// <param name="resourcePath">Embedded resource path (with / and \ separators)</param>
+		/// <returns>Resource stream</returns>
+		public Stream GetEmbeddedResource(string resourcePath)
+		{
+			var parsedResourcePath = ResourcePathParser.Parse(resourcePath);
+			VerifyEmbeddedResourcePath(parsedResourcePath);
+			return GetResourceStream(parsedResourcePath);
+		}
+
 		#region Implementation
 
 		void VerifyEmbeddedResourcePath(ResourcePathParser.ParsedPath parsedResourcePath)
