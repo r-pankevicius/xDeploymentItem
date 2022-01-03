@@ -3,7 +3,7 @@
 The initial idea was to port Visual Studio Unit Testing DeploymentItem attribute to xUnit.
 But after some thinking I redesigned it while initial idea was not lost.
 
-Here is a [good resource](https://xunit.net/docs/comparisons) to help you porting from Visual Studio Unit Testing Framework (a horrible framework, even Microsoft doesn't use it anumore) to xUnit, but **DeploymentItem** is a missing part in that comparison. **xDeploymentItem** just tries to fill that gap (nothing more!).
+Here is a [good resource](https://xunit.net/docs/comparisons) to help you porting from Visual Studio Unit Testing Framework (a horrible framework, even Microsoft doesn't use it anymore) to xUnit, but **DeploymentItem** is a missing part in that comparison. **xDeploymentItem** just tries to fill that gap (nothing more!).
 
 # Porting Visual Studio Unit Testing DeploymentItem
 ## 1. Change "Copy to output directory" to embedded resources
