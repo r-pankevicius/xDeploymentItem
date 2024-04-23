@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace xDeploy
 {
@@ -148,7 +149,7 @@ namespace xDeploy
 		}
 
 		/// <summary>
-		/// Just a convenience method to get embedded resource using "path syntax".
+		/// Convenience method to get embedded resource using "path syntax".
 		/// </summary>
 		/// <param name="resourcePath">Embedded resource path (with / and \ separators)</param>
 		/// <returns>Resource stream</returns>
@@ -157,6 +158,42 @@ namespace xDeploy
 			var parsedResourcePath = ResourcePathParser.Parse(resourcePath);
 			VerifyEmbeddedResourcePath(parsedResourcePath);
 			return GetResourceStream(parsedResourcePath);
+		}
+
+		/// <summary>
+		/// Convenience method to get embedded resource as string using "path syntax".
+		/// Uses BOM header to detect file encoding (uses <see cref="StreamReader(Stream, bool)"/>).
+		/// </summary>
+		/// <param name="resourcePath">Embedded resource path (with / and \ separators)</param>
+		/// <returns>Contents of embedded resource as <c>string</c>.</returns>
+		public string GetEmbeddedResourceAsString(string resourcePath)
+		{
+			var parsedResourcePath = ResourcePathParser.Parse(resourcePath);
+			VerifyEmbeddedResourcePath(parsedResourcePath);
+
+			using var stream = GetResourceStream(parsedResourcePath);
+			using var textReader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+
+			string result = textReader.ReadToEnd();
+			return result;
+		}
+
+		/// <summary>
+		/// Convenience method to get embedded resource as string using "path syntax".
+		/// </summary>
+		/// <param name="resourcePath">Embedded resource path (with / and \ separators)</param>
+		/// <param name="encoding">Text encoding used to read file.</param>
+		/// <returns>Contents of embedded resource as <c>string</c>.</returns>
+		public string GetEmbeddedResourceAsString(string resourcePath, Encoding encoding)
+		{
+			var parsedResourcePath = ResourcePathParser.Parse(resourcePath);
+			VerifyEmbeddedResourcePath(parsedResourcePath);
+			
+			using var stream = GetResourceStream(parsedResourcePath);
+			using var textReader = new StreamReader(stream, encoding);
+
+			string result = textReader.ReadToEnd();
+			return result;
 		}
 
 		#region Implementation
