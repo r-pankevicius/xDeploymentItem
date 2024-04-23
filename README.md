@@ -1,5 +1,8 @@
 ﻿# xDeploymentItem
 
+> 2024-04-23 update. Added `GetEmbeddedResourceAsString`, a handy method to read embedded text files as strings.
+Nobody uses Visual Studio Unit Testing anymore, but left existing methods when deployment on file system is needed.
+
 The initial idea was to port Visual Studio Unit Testing DeploymentItem attribute to xUnit.
 But after some thinking I redesigned it while initial idea was not lost.
 
