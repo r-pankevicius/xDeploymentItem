@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Used under MIT License, see https://github.com/r-pankevicius/xDeploymentItem
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
