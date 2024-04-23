@@ -26,6 +26,8 @@ namespace xDeploy
 		/// </summary>
 		readonly object referenceObject;
 
+		bool disposedValue;
+
 		/// <summary>
 		/// .ctor
 		/// </summary>
@@ -56,10 +58,26 @@ namespace xDeploy
 		/// Deployed files will not be deleted.
 		/// You will be able to see what was left after your tests.
 		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (DeploymentDirectory != null)
+					Directory.Delete(DeploymentDirectory, recursive: true);
+
+				disposedValue = true;
+			}
+		}
+
+		~XDeploymentHelper()
+		{
+			Dispose(disposing: false);
+		}
+
 		public void Dispose()
 		{
-			if (DeploymentDirectory != null)
-				Directory.Delete(DeploymentDirectory, recursive: true);
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>
